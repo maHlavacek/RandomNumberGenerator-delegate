@@ -27,8 +27,6 @@ namespace NumberGenerator.Logic
         public delegate void RandomNumberGeneratoinHandler(int number);
 
         public RandomNumberGeneratoinHandler NewNumber {get;set;}
-
-        //List<int> _observers;
         Random _random;
         int _delay;
         #endregion
@@ -57,8 +55,10 @@ namespace NumberGenerator.Logic
         /// <param name="seed">Enthält die Initialisierung der Zufallszahlengenerierung.</param>
         public RandomNumberGenerator(int delay, int seed)
         {
-           // _observers = new List<int>();
-            RandomNumberGeneratoinHandler += new RandomNumberGeneratoinHandler();
+            if (delay < 0)
+            {
+                throw new ArgumentException("Dalay muss größer als 0 sein");
+            }
             _random = new Random(seed);
             _delay = delay;          
         }
@@ -67,63 +67,9 @@ namespace NumberGenerator.Logic
 
         #region Methods
 
-        #region IObservable Members
-
-        /// <summary>
-        /// Fügt einen Beobachter hinzu.
-        /// </summary>
-        /// <param name="observer">Der Beobachter, welcher benachricht werden möchte.</param>
-        //public void Attach(IObserver observer)
-        //{
-        //    if (observer == null)
-        //    {
-        //        throw new ArgumentNullException($"Der Observer: {observer} ist ungültig");
-        //    }
-           
-        //    if(_observers.Contains(observer))
-        //    {
-        //        throw new InvalidOperationException($"Der Observer: {observer} befidet sich bereits in der Liste");
-        //    }        
-        //    _observers.Add(observer);
-        //}
-
-        /// <summary>
-        /// Entfernt einen Beobachter.
-        /// </summary>
-        /// <param name="observer">Der Beobachter, welcher nicht mehr benachrichtigt werden möchte</param>
-        //public void Detach(IObserver observer)
-        //{
-        //    if (observer == null)
-        //    {
-        //        throw new ArgumentNullException($"Der Observer: {observer} ist ungültig");
-        //    }
-        //    if(_observers.Count == 0)
-        //    {
-        //        throw new InvalidOperationException("Keine Observers in der Liste vorhanden");
-        //    }
-           
-        //    if(!_observers.Contains(observer))
-        //    {
-        //        throw new InvalidOperationException($"Der Observer: {observer} wurder bereits gelöscht oder befindet sich nicht in der Liste");
-        //    }
-            
-        //    _observers.Remove(observer);              
-        //}
-
-        /// <summary>
-        /// Benachrichtigt die registrierten Beobachter, dass eine neue Zahl generiert wurde.
-        /// </summary>
-        /// <param name="number">Die generierte Zahl.</param>
-        public void NotifyObservers(int number)
-        {
-            NewNumber?.Invoke(number);
-        }
-
-        #endregion
-
         public override string ToString()
         {
-            return $"Random Number Generator {_observers.Count} observers, {_delay} ms secondes between two numbers";
+            return $"Random Number Generator observers, {_delay} ms secondes between two numbers";
         }
 
         /// <summary>
@@ -131,9 +77,12 @@ namespace NumberGenerator.Logic
         /// Diese läuft so lange, solange interessierte Beobachter registriert sind (=>Attach()).
         /// </summary>
         public void StartNumberGeneration()
-        {          
-                NotifyObservers(_random.Next(RANDOM_MIN_VALUE, RANDOM_MAX_VALUE));
-               // Task.Delay(_delay).Wait();           
+        {
+            while (NewNumber != null)
+            {
+                NewNumber?.Invoke(_random.Next(RANDOM_MIN_VALUE, RANDOM_MAX_VALUE));
+                Task.Delay(_delay).Wait();     
+            }
         }
 
         #endregion

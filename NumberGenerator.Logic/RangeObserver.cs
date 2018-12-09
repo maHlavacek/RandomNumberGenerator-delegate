@@ -36,7 +36,7 @@ namespace NumberGenerator.Logic
 
         #region Constructors
 
-        public RangeObserver(IObservable numberGenerator, int numberOfHitsToWaitFor, int lowerRange, int upperRange) : base(numberGenerator, int.MaxValue)
+        public RangeObserver(RandomNumberGenerator numberGenerator, int numberOfHitsToWaitFor, int lowerRange, int upperRange) : base(numberGenerator, int.MaxValue)
         {
             if(numberOfHitsToWaitFor < 0)
             {

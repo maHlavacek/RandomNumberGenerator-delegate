@@ -11,7 +11,7 @@ namespace NumberGenerator.Logic
     {
         #region Fields
 
-        private readonly IObservable _numberGenerator;
+        private readonly RandomNumberGenerator _numberGenerator;
 
         #endregion
 
@@ -24,15 +24,15 @@ namespace NumberGenerator.Logic
 
         #region Constructors
 
-        public BaseObserver(IObservable numberGenerator, int countOfNumbersToWaitFor)
+        public BaseObserver(RandomNumberGenerator numberGenerator, int countOfNumbersToWaitFor)
         {
             if (countOfNumbersToWaitFor < 0)
             {
                 throw new ArgumentException("negative Zahlen sind nicht erlaubt");
             }          
-            _numberGenerator = numberGenerator;
+            _numberGenerator = numberGenerator ?? throw new ArgumentNullException("Parameter numberGenerator darf nicht null sein");
             CountOfNumbersToWaitFor = countOfNumbersToWaitFor;
-            _numberGenerator.Attach(this);
+            _numberGenerator.NewNumber += new RandomNumberGenerator.RandomNumberGeneratoinHandler(OnNextNumber);
         }
 
         #endregion
@@ -69,7 +69,7 @@ namespace NumberGenerator.Logic
 
         protected void DetachFromNumberGenerator()
         {
-            _numberGenerator.Detach(this);
+            _numberGenerator.NewNumber -= new RandomNumberGenerator.RandomNumberGeneratoinHandler(OnNextNumber);
         }
 
         #endregion
