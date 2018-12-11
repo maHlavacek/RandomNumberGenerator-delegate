@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace NumberGenerator.Logic
 {
@@ -27,18 +28,17 @@ namespace NumberGenerator.Logic
         public QuickTippObserver(RandomNumberGenerator numberGenerator)
         {
             _numberGenerator = numberGenerator ?? throw new ArgumentNullException(nameof(numberGenerator));
-
             QuickTippNumbers = new List<int>(6);
 
             // Beim NumberGenerator als Beobachter registrieren
-            _numberGenerator.NewNumber += new RandomNumberGenerator.RandomNumberGeneratoinHandler(OnNextNumber);
+            _numberGenerator.NewNumber += OnNextNumber;
         }
 
         #endregion
 
         #region Methods
 
-        public void OnNextNumber(int number)
+        public void OnNextNumber(object sender,int number)
         {
             CountOfNumbersReceived++;
 
@@ -57,15 +57,32 @@ namespace NumberGenerator.Logic
                 DetachFromNumberGenerator();
             }
         }
+        /// <summary>
+        /// Ergebnis ausgeben
+        /// </summary>
+        /// <returns></returns>
+        public string PrintResult()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append($">> {this.GetType().Name + ":",-20} Received {CountOfNumbersReceived} numbers ===> Quick-Tipp is ");
+            QuickTippNumbers.Sort();
+            for (int i = 0; i < QuickTippNumbers.Count; i++)
+            {
+                stringBuilder.Append($"{QuickTippNumbers[i]}, ");
+            }
+            return stringBuilder.ToString();
+        }
 
         public override string ToString()
         {
             return $"{base.ToString()} => QuickTippObserver [{nameof(QuickTippNumbers)}='{String.Join(", ", QuickTippNumbers.OrderBy(_ => _))}']";
         }
-
+        /// <summary>
+        /// Von Event abmelden
+        /// </summary>
         private void DetachFromNumberGenerator()
         {
-            _numberGenerator.NewNumber -= new RandomNumberGenerator.RandomNumberGeneratoinHandler(OnNextNumber);
+            _numberGenerator.NewNumber -= OnNextNumber;
         }
 
         #endregion

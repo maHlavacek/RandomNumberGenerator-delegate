@@ -35,7 +35,7 @@ namespace NumberGenerator.Logic
         {
             get
             {
-                return Sum / CountOfNumbersReceived;
+                return Sum / Math.Max(CountOfNumbersReceived,1);
             }          
         }
 
@@ -57,13 +57,21 @@ namespace NumberGenerator.Logic
         {
             return $"{base.ToString()} => StatisticsObserver [Min='{Min}', Max='{Max}', Sum='{Sum}', Avg='{Avg}']";
         }
+        /// <summary>
+        /// Ergebnis ausgeben
+        /// </summary>
+        /// <returns></returns>
+        public override string PrintResult()
+        {
+            return $"{base.PrintResult()} ===> Min='{Min}', Max='{Max}', Sum='{Sum}', Avg='{Avg}'.";
+        }
 
-        public override void OnNextNumber(int number)
+        public override void OnNextNumber(object sender,int number)
         {
             Min = Math.Min(Min, number);
             Max = Math.Max(Max, number);
             Sum += number;
-            base.OnNextNumber(number);          
+            base.OnNextNumber(this.GetType(),number);          
         }
 
         #endregion

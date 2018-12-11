@@ -32,7 +32,7 @@ namespace NumberGenerator.Logic
             }          
             _numberGenerator = numberGenerator ?? throw new ArgumentNullException("Parameter numberGenerator darf nicht null sein");
             CountOfNumbersToWaitFor = countOfNumbersToWaitFor;
-            _numberGenerator.NewNumber += new RandomNumberGenerator.RandomNumberGeneratoinHandler(OnNextNumber);
+            _numberGenerator.NewNumber += OnNextNumber;
         }
 
         #endregion
@@ -45,7 +45,7 @@ namespace NumberGenerator.Logic
         /// Wird aufgerufen wenn der NumberGenerator eine neue Zahl generiert hat.
         /// </summary>
         /// <param name="number"></param>
-        public virtual void OnNextNumber(int number)
+        public virtual void OnNextNumber(object sender,int number)
         {
             CountOfNumbersReceived++;
 
@@ -61,15 +61,25 @@ namespace NumberGenerator.Logic
         }
 
         #endregion
+        /// <summary>
+        /// Ergebnis ausgeben
+        /// </summary>
+        /// <returns></returns>
+        public virtual string PrintResult()
+        {
+            return $">> {this.GetType().Name+":",-20} Received {CountOfNumbersReceived} numbers";
+        }
 
         public override string ToString()
         {
             return $"BaseObserver [CountOfNumbersReceived='{CountOfNumbersReceived}', CountOfNumbersToWaitFor='{CountOfNumbersToWaitFor}']";
         }
-
+        /// <summary>
+        /// Von Event abmelden
+        /// </summary>
         protected void DetachFromNumberGenerator()
         {
-            _numberGenerator.NewNumber -= new RandomNumberGenerator.RandomNumberGeneratoinHandler(OnNextNumber);
+            _numberGenerator.NewNumber -= OnNextNumber;
         }
 
         #endregion

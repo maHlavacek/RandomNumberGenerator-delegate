@@ -24,9 +24,9 @@ namespace NumberGenerator.Logic
 
         #region Fields
 
-        public delegate void RandomNumberGeneratoinHandler(int number);
+        public event EventHandler<int> NewNumber;
 
-        public RandomNumberGeneratoinHandler NewNumber {get;set;}
+
         Random _random;
         int _delay;
         #endregion
@@ -72,6 +72,8 @@ namespace NumberGenerator.Logic
             return $"Random Number Generator observers, {_delay} ms secondes between two numbers";
         }
 
+
+
         /// <summary>
         /// Started the Nummer-Generierung.
         /// Diese läuft so lange, solange interessierte Beobachter registriert sind (=>Attach()).
@@ -80,7 +82,9 @@ namespace NumberGenerator.Logic
         {
             while (NewNumber != null)
             {
-                NewNumber?.Invoke(_random.Next(RANDOM_MIN_VALUE, RANDOM_MAX_VALUE));
+                int number = _random.Next(RANDOM_MIN_VALUE, RANDOM_MAX_VALUE);
+                Console.WriteLine($"{this.GetType().Name}: Number generated: '{number}'");
+                NewNumber(this.GetType(), number);
                 Task.Delay(_delay).Wait();     
             }
         }

@@ -61,7 +61,12 @@ namespace NumberGenerator.Logic
             return $"{ base.ToString()} => RangeObserver: [LowerRange : '{LowerRange}',UpperRange: '{UpperRange}',NumbersInRange: '{NumbersInRange}',NumbersOfHintToWaitFor: '{NumbersOfHitsToWaitFor}' ]";
         }
 
-        public override void OnNextNumber(int number)
+        public override string PrintResult()
+        {
+            return $"{base.PrintResult()} ===> There were '{NumbersInRange}' numbers between '{LowerRange}' and '{UpperRange}'.";
+        }
+
+        public override void OnNextNumber(object sender,int number)
         {
             if (number > LowerRange && number < UpperRange)
             {
@@ -78,7 +83,7 @@ namespace NumberGenerator.Logic
                 Console.WriteLine($"   >> {this.GetType().Name}: Got '{CountOfNumbersReceived}' in the configured range  => I am not interested in new numbers anymore => Detach().");
                 Console.ResetColor();
             }           
-            base.OnNextNumber(number);
+            base.OnNextNumber(this.GetType(),number);
         }
 
         #endregion
